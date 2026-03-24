@@ -1,14 +1,30 @@
-import os
-from datetime import datetime
+name: Daily Project Generator
 
-today = datetime.now().strftime("%Y-%m-%d")
-folder = f"project-{today}"
+on:
+  workflow_dispatch:
 
-os.makedirs(folder, exist_ok=True)
+jobs:
+  generate-project:
+    runs-on: ubuntu-latest
 
-content = f"# Project {today}\n\nThis is your auto-generated project."
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-with open(f"{folder}/README.md", "w") as f:
-    f.write(content)
+      - name: List files (debug)
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files:"
+          ls -la
 
-print("Project created")
+      - name: Run Python script
+        run: python3 generate_project.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Manisha Kanojia"
+          git config --global user.email "manishakanojia95@gmail.com"
+          git add .
+          git commit -m "Auto project" || echo "Nothing to commit"
+          git push
